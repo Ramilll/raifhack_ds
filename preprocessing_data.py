@@ -28,24 +28,27 @@ def preprocessing_floor(data, nan_value):
     return new_data
 
 
-def preprocessing_data(data):
-    new_data = data.copy()
-    new_data = preprocessing_floor(new_data, 100500)
+def preprocessing_data(train, test):
+    new_train = preprocessing_floor(train.copy(), 100500)
+    new_test = preprocessing_floor(test.copy(), 100500)
 
     def ord_enc(col):
         enc = OrdinalEncoder()
-        X = new_data[[col]]
+        X = np.concatenate((new_train[[col]].to_numpy(), new_test[[col]].to_numpy()))
         enc.fit(X)
-        return enc.transform(X)
+        return enc.transform(new_train[[col]]), enc.transform(new_test[[col]])
 
-    new_data['floor'] = ord_enc('floor')
-    new_data['city'] = ord_enc('city')
-    new_data['osm_city_nearest_name'] = ord_enc('osm_city_nearest_name')
-    new_data['region'] = ord_enc('region')
-    return new_data
+    new_train['floor'], new_test['floor'] = ord_enc('floor')
+    new_train['city'], new_test['city'] = ord_enc('city')
+    new_train['osm_city_nearest_name'], new_test['osm_city_nearest_name'] = ord_enc('osm_city_nearest_name')
+    new_train['region'], new_test['region'] = ord_enc('region')
+    return new_train, new_test
 
 
-train = pd.read_csv('data/train.csv')
-train_preprocessing = preprocessing_data(train)
-train_preprocessing.to_csv('new_data')
+train_data = pd.read_csv('data/train.csv')
+test_data = pd.read_csv('data/test.csv')
+train_preprocessing, test_preprocessing = preprocessing_data(train_data, test_data)
+train_preprocessing.to_csv('new_train_data')
+test_preprocessing.to_csv('new_test_data')
 print(train_preprocessing.head())
+print(test_preprocessing.head())
