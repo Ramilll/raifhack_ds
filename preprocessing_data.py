@@ -68,11 +68,24 @@ def transform_numeric_osm_point_features(df):
         df_copy.drop(columns_starts_with_prefix[1:], axis = 1, inplace=True)
     return df_copy
 
+
+
 def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: str, path_to_save_test: str) -> None:
 
     # read data
     train = pd.read_csv(path_to_train, index_col='id')
     test = pd.read_csv(path_to_test, index_col='id')
+
+    # process One Hot Encoding on realty_type
+    train['realty_type_0'] = (train['realty_type'] == 10).astype(int)
+    train['realty_type_1'] = (train['realty_type'] == 100).astype(int)
+    train['realty_type_2'] = (train['realty_type'] == 110).astype(int)
+    train = train.drop(columns=['realty_type'])
+
+    test['realty_type_0'] = (test['realty_type'] == 10).astype(int)
+    test['realty_type_1'] = (test['realty_type'] == 100).astype(int)
+    test['realty_type_2'] = (test['realty_type'] == 110).astype(int)
+    test = test.drop(columns=['realty_type'])
 
     # process floor
     train = preprocessing_floor(train, 2)
@@ -142,6 +155,7 @@ def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: 
 
     train.to_csv(path_to_save_train)
     test.to_csv(path_to_save_test)
+
 
 
 if __name__ == '__main__':
