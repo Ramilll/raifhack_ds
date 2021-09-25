@@ -53,7 +53,19 @@ def preprocessing_v1():
     test_preprocessing.to_csv('new_test_data')
     print(train_preprocessing.head())
     print(test_preprocessing.head())
-
+    
+def transform_numeric_osm_point_features(df):
+    df_copy = df.copy(deep=True)
+    columns_to_transform = sorted([c for c in df.select_dtypes(np.number).columns if (c.find("points") != -1) and (c[:3] == "osm")])
+    column_prefixes = set([column[:10] for column in columns_to_transform ])
+    for column_prefix in column_prefixes:
+        columns_starts_with_prefix = sorted([c for c in columns_to_transform if c[:10] == column_prefix])
+        for i in range(1, len(columns_starts_with_prefix)):
+            old_column_name = str(columns_starts_with_prefix[i])
+            new_column_name = str(columns_starts_with_prefix[i] + "-" + columns_starts_with_prefix[i-1])    
+            df_copy[new_column_name] = df_copy[columns_starts_with_prefix[i]] - df_copy[columns_starts_with_prefix[i-1]]
+        df_copy.drop(columns_starts_with_prefix[1:], axis = 1, inplace=True)
+    return df_copy
 
 def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: str, path_to_save_test: str) -> None:
 
@@ -68,6 +80,10 @@ def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: 
     # del region, street
     train = train.drop(columns=['city', 'street'])
     test = test.drop(columns=['city', 'street'])
+    
+    # get diff of features (osm_points)
+    train = transform_numeric_osm_point_features(train)
+    test = transform_numeric_osm_point_features(test)
 
     # fill nans with mean
     columns_with_nans = ['osm_city_nearest_population', 'reform_house_population_1000', 'reform_house_population_500', 'reform_mean_floor_count_1000', 'reform_mean_floor_count_500', 'reform_mean_year_building_1000', 'reform_mean_year_building_500']
