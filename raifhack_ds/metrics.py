@@ -1,6 +1,7 @@
 import typing
 import numpy as np
-from sklearn.metrics import mean_absolute_percentage_error, r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error
+# from sklearn.metrics import mean_absolute_percentage_error
 
 THRESHOLD = 0.15
 NEGATIVE_WEIGHT = 1.1
@@ -33,12 +34,12 @@ def median_absolute_percentage_error(y_true: np.array, y_pred: np.array) -> floa
     return np.median(np.abs(y_pred-y_true)/y_true)
 
 def metrics_stat(y_true: np.array, y_pred: np.array) -> typing.Dict[str,float]:
-    mape = mean_absolute_percentage_error(y_true, y_pred)
+    # mape = mean_absolute_percentage_error(y_true, y_pred)
     mdape = median_absolute_percentage_error(y_true, y_pred)
     rmse = mean_squared_error(y_true, y_pred, squared=False)
     r2 = r2_score(y_true, y_pred)
     raif_metric = deviation_metric(y_true, y_pred)
-    return {'mape':mape, 'mdape':mdape, 'rmse': rmse, 'r2': r2, 'raif_metric':raif_metric}
+    return {'mdape':mdape, 'rmse': rmse, 'r2': r2, 'raif_metric':raif_metric}
 
 EPS = 1e-8
 assert deviation_metric(np.array([1,2,3,4,5]),np.array([1,2,3,4,5])) <= EPS
