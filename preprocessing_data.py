@@ -78,9 +78,9 @@ def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: 
     train = preprocessing_floor(train, 2)
     test = preprocessing_floor(test, 2)
 
-    # del region, street
-    train = train.drop(columns=['city', 'street'])
-    test = test.drop(columns=['city', 'street'])
+    # del city, street, osm_city_nearest_name, id
+    train = train.drop(columns=['city', 'street', 'osm_city_nearest_name'])
+    test = test.drop(columns=['city', 'street', 'osm_city_nearest_name'])
     
     # get diff of features (osm_points)
     train = transform_numeric_osm_point_features(train)
