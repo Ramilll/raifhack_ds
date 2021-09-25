@@ -31,6 +31,8 @@
     <li> запустить обучение
 
     poetry run python3 train.py --train_data <path_to_train_data> --model_path <path_to_pickle_ml_model>
+
+    poetry run python3 train.py --train_data data --model_path model.bin
 </li>
     <li> запустить предикт
 
@@ -38,6 +40,7 @@
 </li>
     <li> загрузить полученные результаты в систему </li>
 </ol>
+
 ## Вариант с requirements.txt
 <ol>
     <li> убедиться, что у вас стоит python3.6 или выше </li>
