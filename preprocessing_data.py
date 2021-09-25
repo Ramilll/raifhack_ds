@@ -32,8 +32,9 @@ def preprocessing_data(train, test):
     new_test = preprocessing_floor(test.copy(), 100500)
 
     def ord_enc(col):
-        enc = OrdinalEncoder()
-        X = np.concatenate((new_train[[col]].to_numpy(), new_test[[col]].to_numpy()))
+        enc = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1)
+        X = new_train[[col]]
+        # X = np.concatenate((new_train[[col]].to_numpy(), new_test[[col]].to_numpy()))
         enc.fit(X)
         return enc.transform(new_train[[col]]), enc.transform(new_test[[col]])
 
