@@ -5,6 +5,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
 
 from tqdm import tqdm
+from os import makedirs
 
 def preprocessing_one_floor(s, nan_value):
     if type(s) == str:
@@ -145,7 +146,10 @@ def preprocessing_v2(path_to_train: str, path_to_test: str, path_to_save_train: 
 
 if __name__ == '__main__':
 
-    PATH_TO_INITIAL_DATA = '/Users/olegmelnikov/Desktop/data/'
-    PATH_TO_SAVE_PREPROCESSED_DATA = '/Users/olegmelnikov/Desktop/data/'
+    
+    PATH_TO_INITIAL_DATA = 'data_split/'
+    PATH_TO_SAVE_PREPROCESSED_DATA = 'data_preprocessed/'
 
-    preprocessing_v2(PATH_TO_INITIAL_DATA + 'train.csv', PATH_TO_INITIAL_DATA + 'test.csv', PATH_TO_INITIAL_DATA + 'train_v2.csv', PATH_TO_INITIAL_DATA + 'test_v2.csv')
+    makedirs(PATH_TO_SAVE_PREPROCESSED_DATA, exist_ok=True)
+
+    preprocessing_v2(PATH_TO_INITIAL_DATA + 'train.csv', PATH_TO_INITIAL_DATA + 'val.csv', PATH_TO_SAVE_PREPROCESSED_DATA + 'train_v2.csv', PATH_TO_SAVE_PREPROCESSED_DATA + 'val_v2.csv')
