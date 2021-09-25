@@ -2,9 +2,10 @@ import typing
 import pickle
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import logging
 
-from lightgbm import LGBMRegressor
+from lightgbm import LGBMRegressor, plot_importance
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -120,3 +121,10 @@ class BenchmarkModel():
         with open(path, "rb") as f:
             model = pickle.load(f)
         return model
+    
+    def plot_feature_importance(self, path: str):
+        fig, ax = plt.subplots(figsize=(30, 12))
+        plot_importance(self.model, ax=ax)
+        fig.savefig(path)
+        
+        return self.model.feature_importances_
