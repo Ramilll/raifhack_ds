@@ -6,14 +6,20 @@ from sklearn.preprocessing import StandardScaler
 from preprocessing_data import preprocessing_floor
 
 
+args = {
+    'tr'      : 'data_split/train.csv',    # Путь до обучающего датасета
+    'tst'     : 'data_split/val.csv',      # Путь до отложенной выборки
+    'knn_tr'  : 'generated_features/train1_knn.csv',    # KNN for train
+    'knn_tst' : 'generated_features/val_knn.csv',    # KNN for train
+}
+
+
 def gen_knn_geo_date_features(train_path, val_path):
     val = pd.read_csv(val_path, index_col='id')
     train = pd.read_csv(train_path, index_col='id')
 
     train['osm_city_nearest_population'] = train['osm_city_nearest_population'].fillna(0)
     val['osm_city_nearest_population'] = val['osm_city_nearest_population'].fillna(0)
-
-    # print(train['osm_city_nearest_population'].isna().sum())
 
     # date to int
     train['date'] = (pd.to_datetime(train['date']) - pd.Timestamp('2020-01-01')).dt.days
@@ -29,8 +35,6 @@ def gen_knn_geo_date_features(train_path, val_path):
     val['realty_type_1'] = (val['realty_type'] == 100).astype(int)
     val['realty_type_2'] = (val['realty_type'] == 110).astype(int)
     val = val.drop(columns=['realty_type'])
-
-    y_val = pd.read_csv('data_split/val_true.csv', index_col='id').to_numpy()
 
     knn_features = ['lng', 'lat', 'total_square', 'realty_type_0', 'realty_type_1', 'realty_type_2', 'osm_city_nearest_population']
 
@@ -67,7 +71,7 @@ def gen_knn_geo_date_features(train_path, val_path):
 
     makedirs('generated_features', exist_ok=True)
 
-    new_df.to_csv('generated_features/train1knn01.csv')
+    new_df.to_csv(args['knn_tr'])
 
     y_pred_val0 = neigh0.predict(X_val)
     y_pred_val1 = neigh1.predict(X_val)
@@ -77,47 +81,9 @@ def gen_knn_geo_date_features(train_path, val_path):
 
     new_df = val[['knn0', 'knn1']]
     filename = val_path.split('.csv')[0].split('/')[1]
-    new_df.to_csv(f'generated_features/{filename}1knn01.csv')
-
-
-def _get_new_features(data: pd.DataFrame) -> pd.DataFrame:
-    data = preprocessing_floor(data, 2)
-    data['floor'][data.floor <= 0] = 0
-    data['floor'][(1 <= data.floor) & (data.floor <= 1)] = 1
-    data['floor'][(2 <= data.floor) & (data.floor <= 2)] = 2
-    data['floor'][(3 <= data.floor) & (data.floor <= 5)] = 3
-    data['floor'][(6 <= data.floor) & (data.floor <= 10)] = 4
-    data['floor'][(11 <= data.floor)] = 10
-
-    def need_log(f_name):
-        for s in ['osm_building_points', 'osm_city_closest_dist', 'osm_crossing_closest_dist', 'total_square', 'osm_culture_points', 'osm_hotels_points', 'osm_subway_closest_dist', 'osm_train_stop']:
-            if f_name.startswith(s):
-                return True
-        return False
-
-    for feature in data.columns:
-        if need_log(feature):
-            print(f'{feature} -> log_{feature}')
-            try:
-                data[f'log_{feature}'] = np.log(1 + data[feature])
-                data.drop(feature, axis=1, inplace=True)
-            except:
-                print('Failed!')
-    return data
-
-
-def gen_new_features():
-    val = pd.read_csv('data_split/val.csv', index_col='id')
-    train = pd.read_csv('data_split/train.csv', index_col='id')
-    res_dir = 'generated_features'
-    if not path.exists(res_dir):
-        makedirs(res_dir)
-    gen_train = _get_new_features(train)
-    gen_val = _get_new_features(val)
-    gen_train.to_csv(path.join(res_dir, 'train.csv'))
-    gen_val.to_csv(path.join(res_dir, 'val.csv'))
+    new_df.to_csv(args['knn_tst'])
 
 
 if __name__ == '__main__':
-    gen_knn_geo_date_features(train_path='data_split/train.csv', val_path='data_split/val.csv')
-    gen_knn_geo_date_features(train_path='data_split/train.csv', val_path='data/test.csv')
+    gen_knn_geo_date_features(train_path=args['tr'], val_path=args['tst'])
+    # gen_knn_geo_date_features(train_path='data_split/train.csv', val_path='data/test.csv')
