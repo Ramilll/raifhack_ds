@@ -1,10 +1,16 @@
 import pandas as pd
 from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression
+import json
 
 
 def predict(X_train, y_train, X_test):
-    model = Ridge(alpha=1.0)
+    model = LinearRegression()
     model.fit(X_train, y_train)
+
+    with open('lr_coeffs.json', 'w') as f:
+        json.dump(model.coef_.tolist(), f)
+
 
     return model.predict(X_test)
 
