@@ -1,6 +1,6 @@
 TARGET = 'per_square_meter_price'
 # признаки (или набор признаков), для которых применяем smoothed target encoding
-CATEGORICAL_STE_FEATURES = ['region', 'city', 'realty_type']
+CATEGORICAL_STE_FEATURES = ['region', 'city', 'osm_city_nearest_name', 'realty_type', 'floor']
 
 # признаки, для которых применяем one hot encoding
 CATEGORICAL_OHE_FEATURES = []
@@ -13,7 +13,7 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
        'osm_building_points_in_0.01', 'osm_catering_points_in_0.001',
        'osm_catering_points_in_0.005', 'osm_catering_points_in_0.0075',
        'osm_catering_points_in_0.01', 'osm_city_closest_dist',
-      'osm_city_nearest_population',
+       'osm_city_nearest_population',
        'osm_crossing_closest_dist', 'osm_crossing_points_in_0.001',
        'osm_crossing_points_in_0.005', 'osm_crossing_points_in_0.0075',
        'osm_crossing_points_in_0.01', 'osm_culture_points_in_0.001',
@@ -39,7 +39,10 @@ NUM_FEATURES = ['lat', 'lng', 'osm_amenity_points_in_0.001',
        'reform_count_of_houses_1000', 'reform_count_of_houses_500',
        'reform_house_population_1000', 'reform_house_population_500',
        'reform_mean_floor_count_1000', 'reform_mean_floor_count_500',
-       'reform_mean_year_building_1000', 'reform_mean_year_building_500','total_square']
+       'reform_mean_year_building_1000', 'reform_mean_year_building_500',
+       'total_square', 'date'
+]
+
 
 MODEL_PARAMS = dict(
             n_estimators=500,
@@ -51,6 +54,7 @@ MODEL_PARAMS = dict(
             n_jobs=1,
             random_state=563,
         )
+
 
 LOGGING_CONFIG = {
     "version": 1,
