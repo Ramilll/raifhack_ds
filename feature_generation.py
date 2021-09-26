@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 from preprocessing_data import preprocessing_floor
 
 
-def gen_knn_geo_date_features():
-    val = pd.read_csv('data_split/val.csv', index_col='id')
-    train = pd.read_csv('data_split/train.csv', index_col='id')
+def gen_knn_geo_date_features(train_path, val_path):
+    val = pd.read_csv(val_path, index_col='id')
+    train = pd.read_csv(train_path, index_col='id')
 
     train['osm_city_nearest_population'] = train['osm_city_nearest_population'].fillna(0)
     val['osm_city_nearest_population'] = val['osm_city_nearest_population'].fillna(0)
@@ -76,7 +76,8 @@ def gen_knn_geo_date_features():
     val['knn1'] = y_pred_val1
 
     new_df = val[['knn0', 'knn1']]
-    new_df.to_csv('generated_features/val1knn01.csv')
+    filename = val_path.split('.csv')[0].split('/')[1]
+    new_df.to_csv(f'generated_features/{filename}1knn01.csv')
 
 
 def _get_new_features(data: pd.DataFrame) -> pd.DataFrame:
@@ -118,5 +119,5 @@ def gen_new_features():
 
 
 if __name__ == '__main__':
-    gen_knn_geo_date_features()
-    # gen_new_features()
+    gen_knn_geo_date_features(train_path='data_split/train.csv', val_path='data_split/val.csv')
+    gen_knn_geo_date_features(train_path='data_split/train.csv', val_path='data/test.csv')
